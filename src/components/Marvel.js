@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import "./Marvel.css";
 
 export default function Marvel() {
@@ -9,25 +8,20 @@ export default function Marvel() {
 
   useEffect(() => {
     if (!navigator.onLine) {
-      if (localStorage.getItem("marvel") === "") {
+      if (localStorage.getItem("marvel") === null) {
         setMarvel("Loading...");
       } else {
-        setMarvel(localStorage.getItem("marvel"));
+        setMarvel(JSON.parse(localStorage.getItem("marvel")));
       }
     } else {
-      axios
-        .get(URL)
-        .then((response) => {
-          // Obtenemos los datos
-          setMarvel(response.data.data.results);
-          console.log(response.data.data.results);
-        })
-        .catch((e) => {
-          // Capturamos los errores
-          console.log(e);
+      fetch(URL)
+        .then((res) => res.json())
+        .then((res) => {
+          setMarvel(res.data.results);
+          localStorage.setItem("marvel", JSON.stringify(res.data.results));
         });
     }
-  }, [URL]);
+  }, []);
 
   return (
     <>
